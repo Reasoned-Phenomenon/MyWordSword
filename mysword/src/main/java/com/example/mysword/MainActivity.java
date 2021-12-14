@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnKeyListener {
 
     RecyclerView view_rv;
 
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     TextView tv_time, tv_topic, tv_rank, tv_score;
 
     String str_start, str_def,inputWord, outputWord, user_name;
-    int int_score;
+    int int_score,int_time;
 
     ArrayList<String> list = new ArrayList<String>();
 
@@ -70,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         view_rv.setLayoutManager(layoutManager);
 
+        //엔터키로 입력
+        et_input.setOnKeyListener(this);
+
         //최고점
         RecordDAO dao = new RecordDAO();
         tv_rank.append(Integer.toString( dao.maxRec(dbHelper)) );
@@ -77,6 +80,11 @@ public class MainActivity extends AppCompatActivity {
         //이름 저장
         Intent intent = getIntent();
         user_name = intent.getStringExtra("name");
+
+        if (intent.hasExtra("time")) {
+            int_time = intent.getIntExtra("time",0);
+            System.out.println(int_time);
+        }
 
         //제시어
         String[] arr = new String[] {"홍길동","대한민국","예담","대구","나비잠","아슬라","여우비","별하"};
@@ -97,12 +105,13 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(new Intent(MainActivity.this, MainActivity.class));
                 })
                 .setNegativeButton("종료",(dialogInterface, i) -> {
-                    finish();
+                    Intent backIntent = new Intent(MainActivity.this,FirstActivity.class);
+                    startActivity(backIntent);
                 })
                 .create();
 
         //타이머
-        CountDownTimer timer = new CountDownTimer(30000, 1000) {
+        CountDownTimer timer = new CountDownTimer(int_time*1000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 tv_time.setText(millisUntilFinished / 1000 + " 초");
@@ -116,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
                 builder.show();
 
                 //기록저장
-                //TODO - 다이얼로그로 이름 받기
                 RecordDAO dao = new RecordDAO();
                 dao.insertRec(dbHelper,user_name,int_score);
             }
@@ -129,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 //입력 단어의 첫글자
-                inputWord = et_input.getText().toString();
+                inputWord = et_input.getText().toString().trim();
                 if(inputWord.length() < 2) {
                     Toast.makeText(getApplicationContext(),"두글자 이상 입력하세요",Toast.LENGTH_SHORT).show();
                     return;
@@ -143,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //이전 단어의 마지막 글자 = 입력 단어의 첫글자
                 if(lastLetter.equals(firstLetter)) {
-                    String url = "https://stdict.korean.go.kr/api/search.do?key=228B1E6329BDCFE43D09A1BE5129B58B&req_type=json&q="+inputWord;
+                    String url = "https://stdict.korean.go.kr/api/search.do?key=228B1E6329BDCFE43D09A1BE5129B58B&req_type=json&advanced=y&method=wildcard&pos=1,2&q="+inputWord;
                     StringRequest request = new StringRequest(url, s->{
                         //사전에 해당 단어가 없을 때 -> s가 널일때.
                         if (s.isEmpty()) {
@@ -178,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
 
                             //컴퓨터 대응
                             outputWord = inputWord.substring(inputWord.length()-1)+"??";
-                            String comUrl = "https://stdict.korean.go.kr/api/search.do?key=228B1E6329BDCFE43D09A1BE5129B58B&req_type=json&advanced=y&method=wildcard&q="+outputWord;
+                            String comUrl = "https://stdict.korean.go.kr/api/search.do?key=228B1E6329BDCFE43D09A1BE5129B58B&req_type=json&advanced=y&method=wildcard&pos=1,2&q="+outputWord;
                             StringRequest comRequest = new StringRequest(comUrl, comS->{
 
                                 if (comS.equals("{}")) {
@@ -248,16 +256,16 @@ public class MainActivity extends AppCompatActivity {
 
     }
     //TODO - 엔터키로 입력
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
 
-        System.out.println("키다운");
+    @Override
+    public boolean onKey(View v, int keyCode, KeyEvent event) {
+
         if(keyCode == KeyEvent.KEYCODE_ENTER) {
             System.out.println("엔터");
             btn_send.callOnClick();
 
         }
 
-        return super.onKeyDown(keyCode, event);
+        return false;
     }
 }
