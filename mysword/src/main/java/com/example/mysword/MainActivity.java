@@ -102,8 +102,10 @@ public class MainActivity extends AppCompatActivity implements View.OnKeyListene
         builder.setTitle("alert")
                 .setMessage("게임이 종료 됐습니다")
                 .setPositiveButton("다시하기",(dialogInterface, i) -> {
-                    finish();
-                    startActivity(new Intent(MainActivity.this, MainActivity.class));
+                    Intent reIntent = new Intent(MainActivity.this, MainActivity.class);
+                    reIntent.putExtra("name",user_name);
+                    reIntent.putExtra("time",int_time);
+                    startActivity(reIntent);
                 })
                 .setNegativeButton("종료",(dialogInterface, i) -> {
                     Intent backIntent = new Intent(MainActivity.this,FirstActivity.class);
