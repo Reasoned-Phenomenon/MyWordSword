@@ -40,7 +40,8 @@ public class MainActivity extends AppCompatActivity implements View.OnKeyListene
     TextView tv_time, tv_topic, tv_rank, tv_score;
 
     String str_start, str_def,inputWord, outputWord, user_name;
-    int int_score,int_time;
+    int int_score;
+    int int_time;
 
     ArrayList<String> list = new ArrayList<String>();
 
@@ -138,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements View.OnKeyListene
 
                 //입력 단어의 첫글자
                 inputWord = et_input.getText().toString().trim();
-                if(inputWord.length() < 2) {
+                if(inputWord.length() < 2 ) {
                     Toast.makeText(getApplicationContext(),"두글자 이상 입력하세요",Toast.LENGTH_SHORT).show();
                     return;
                 }

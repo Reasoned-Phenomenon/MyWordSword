@@ -123,7 +123,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="208dp"
         android:layout_marginTop="416dp"
-        android:hint="Time"
+        android:hint="기본값 : 15초"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

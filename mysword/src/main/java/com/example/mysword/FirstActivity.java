@@ -87,6 +87,10 @@ public class FirstActivity extends AppCompatActivity {
                 //이름 넘기기
                 intent.putExtra("name",et_name.getText().toString());
                 //TODO 난이도 설정
+                //기본값
+                if (int_time == 0) {
+                    int_time= 15;
+                }
                 intent.putExtra("time",int_time);
                 //이름칸 초기화
                 et_name.setText("");
